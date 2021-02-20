@@ -17,49 +17,36 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import { check, PERMISSIONS, checkMultiple, request, requestMultiple } from 'react-native-permissions';
+import { check, PERMISSIONS, checkMultiple, request, requestMultiple, openSettings } from 'react-native-permissions';
 
 export default class App extends React.Component {
 
   componentDidMount() {
 
+    // UNAVAILABLE => CİHAZDA MEVCUT DEĞİL
+    // DENIED => İZİN İSTENMEDİ / REDDEDİLDİ
+    // GRANTED => İZİN VERİLDİ
+    // BLOCKED => İZİN REDDEDİLDİ ARTIK TALEP EDİLEMEZ
+
     const CameraPermission = Platform.select({
       android: PERMISSIONS.ANDROID.CAMERA,
       ios: PERMISSIONS.IOS.CAMERA
     });
 
-    const ReceiveSmsPermission = Platform.select({
-      android: PERMISSIONS.ANDROID.RECEIVE_SMS,
-      ios: PERMISSIONS.IOS.RECEIVE_SMS
-    });
-
-    requestMultiple([CameraPermission, ReceiveSmsPermission]).then((status) => {
-      alert('Kamera', status[CameraPermission]); // Daha önce bunun izni alındığı için bir daha bunun için izin istemez.
-      alert('SMS', status[ReceiveSmsPermission]);
+    request(CameraPermission).then((result) => {
+      alert(result);
     })
 
-    /* request(CameraPermission).then((result) => {
-       alert(result);
-     })*/
-
-    /* Check
-    const CameraPermission = Platform.select({
+    check(Platform.select({
       android: PERMISSIONS.ANDROID.CAMERA,
       ios: PERMISSIONS.IOS.CAMERA
-    });
-
-    const ReceiveSmsPermission = Platform.select({
-      android: PERMISSIONS.ANDROID.RECEIVE_SMS,
-      ios: PERMISSIONS.IOS.RECEIVE_SMS
-    });
-
-    checkMultiple([CameraPermission, ReceiveSmsPermission])
-      .then((status) => {
-        console.log('Camera', status[CameraPermission]);
-        console.log('ReceiveSms', status[ReceiveSmsPermission]);
+    }))
+      .then((res) => {
+        if (res == 'blocked') {
+          openSettings().catch((e) => alert(e)); // ilgili ayarları açar sorun varsa hatayı loglar.
+        }
       })
-
-      */
+      .catch((e) => console.log(e));
 
   }
 
