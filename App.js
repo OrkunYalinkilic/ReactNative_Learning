@@ -24,6 +24,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import {PERMISSIONS} from 'react-native-permissions';
+
+
 const App: () => React$Node = () => {
   return (
     <>
